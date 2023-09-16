@@ -1,1 +1,11 @@
-# Sistema de Control de Equipos
+### Details
+- ASP Core
+- Sql Server
+- Entity Framework
+- Visual Studio
+
+### Screenshots
+
+- Program video
+
+
