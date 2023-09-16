@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Departamentos";
+    ViewData["Content-title"] = "Departamentos";
+}
+@model Sistema_de_Control_de_Equipos.Models.ViewModels.DepartmentViewModel
+
+
+
+<div class="bg-white border">
+    <div class="p-3 bg-gray-light border-bottom d-flex justify-content-end">
+        <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#department-modal">Registrar departamento</button>
+    </div>
+    <div id="results" class="results-table">
+        <div class="results-header p-3 bg-gray-light border-bottom">
+            <div class="results-fields">
+                <p class="color-dark">Codigo</p>
+                <p>Nombre</p>
+            </div>
+            <div class="results-actions">
+                <p>Acciones</p>
+            </div>
+        </div>
+        @foreach (var department in @Model.Departments)
+        {
+            <div class="results-content m-3">
+                <div class="results-data flex-grow-1 d-flex">
+                    <p>@department.Id</p>
+                    <p>@department.Name</p>
+                </div>
+                <div class="results-actions d-flex align-items-center justify-content-evenly">
+                    @*                    <i role="button" class="fa-regular fa-trash-can"></i>*@
+                    <i role="button" class="fa-regular fa-pen-to-square"
+                       data-bs-toggle="modal"
+                       data-bs-target="#edit-modal-@department.Name"></i>
+                </div>
+            </div>
+
+            <div class="modal fade" id="edit-modal-@department.Name" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form asp-action="edit" class="modal-content" method="post">
+                        @*    <div asp-validation-summary="All"></div>*@
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Editar departamento</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input asp-for=Id type="hidden" value="@department.Id" />
+                            <div class="form-group">
+                                <label class="form-label">Nuevo nombre</label>
+                                <input asp-for="Name" value="@department.Name" data-val-required="Ingrese el nuevo nombre del departamento." type="text" class="form-control">
+                                <span asp-validation-for="Name" style="font-size: 14px;" class="form-text text-danger"></span>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-warning">Editar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="department-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="create" method="post" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Datos de la marca</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @*                <div asp-validation-summary="All"></div>*@
+                <div class="form-group">
+                    <label asp-for=Name class="form-label"></label>
+                    <input asp-for=Name type="text" data-val-required="Ingrese el nombre del departamento." class="form-control">
+                    <span asp-validation-for="Name" style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @{
+        Html.RenderPartial("_ValidationScriptsPartial");
+    }
+}

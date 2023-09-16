@@ -1,0 +1,190 @@
+﻿@{
+    ViewData["Title"] = "Equipos";
+    ViewData["Content-title"] = "Equipos";
+}
+
+@model Sistema_de_Control_de_Equipos.Models.ViewModels.PcViewModel
+ 
+
+<div class="border bg-white">
+    <div class="p-3 bg-gray-light border-bottom d-flex justify-content-end">
+        <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#pc-modal">Registrar equipo</button>
+    </div>
+    <div id="results" class="results-table">
+        <div class="results-header p-3 bg-gray-light border-bottom">
+            <div class="results-fields">
+                <p class="color-dark">N° de equipo</p>
+                <p>Departamento</p>
+                <p>Responsable</p>
+                <p>Solicitante</p>
+                <p>Observaciones</p>
+            </div>
+            <div class="results-actions">
+                <p>Acciones</p>
+            </div>
+
+        </div>
+         @if (Model.Pcs.Count == 0)
+        {
+            <div class="text-center my-3">
+                <p class="color-gray text-bold">Sin equipos para reparar.</p>                   
+                 <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#pc-modal">Registrar equipo</button>               
+            </div>
+
+        }
+        else{
+            @foreach(var pc in Model.Pcs)
+            {
+                <div class="results-content m-3">
+                    <div class="results-data flex-grow-1 d-flex">
+                        <a asp-controller="computers" asp-action="details" asp-route-id="@pc.Serial" class="hover-link w-25 text-decoration-none">
+                           @Html.DisplayFor(m=>pc.Serial)
+                        </a>
+                        <p>@Html.DisplayFor(m=>pc.Department.Name)</p>
+                        <p>@Html.DisplayFor(m=>pc.Responsible.Name)</p>
+                        <p>@Html.DisplayFor(m=>pc.Owner)</p>
+           
+                        @if (@pc.Observations != null)
+                        {
+                            <p>@Html.DisplayFor(m=>pc.Observations)</p>
+                        }
+                        else
+                        {
+                            <p>-----</p>
+                        }
+                    </div>
+                    <div class="results-actions d-flex align-items-center justify-content-evenly">
+                        <i role="button" class="fa-regular fa-trash-can" data-bs-toggle="modal" data-bs-target="#delete-modal-@pc.Id"></i>
+                        <i role="button" class="fa-regular fa-pen-to-square" data-bs-toggle="modal" data-bs-target="#edit-modal-@pc.Id"></i>
+                    </div>
+                </div>
+               <div class="modal fade" id="edit-modal-@pc.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <form asp-controller="computers" asp-action="edit" asp-route-id=@pc.Id class="modal-content" method="post">
+                            @*    <div asp-validation-summary="All"></div>*@
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Editar componente</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label asp-for=Serial class="form-label">Nuevo numero de serie</label>
+                                    <input asp-for=Serial type="text" value=@pc.Serial class="form-control" data-val-required="Ingrese el nuevo codigo de equipo unico.">
+                                    <span asp-validation-for=Serial class="text-danger" style="font-size:14px;"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=Owner class="form-label">Nuevo propietario</label>
+                                    <input asp-for=Owner type="text" value=@pc.Owner class="form-control" data-val-required="Ingrese el nuevo propietario del equipo.">
+                                    <span asp-validation-for=Owner class="text-danger" style="font-size:14px;"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=DepartmentId class="form-label">Nuevo departamento</label>
+                                    <select asp-for=DepartmentId asp-items=ViewBag.Departments type="text" class="form-control"
+                                            data-val-required="Seleccione un nuevo departamento.">
+                                    </select>
+                                    <span asp-validation-for=DepartmentId class="text-danger" style="font-size:14px;"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=ResponsibleId class="form-label">Nuevo responsable</label>
+                                    <select asp-for=ResponsibleId asp-items=ViewBag.Responsibles type="text" class="form-control"
+                                            data-val-required="Seleccione el nuevo responsable de reparacion.">
+                                    </select>
+                                    <span asp-validation-for=ResponsibleId class="text-danger" style="font-size:14px;"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=Observations class="form-label"></label>
+                                    <textarea asp-for=Observations class="form-control">@pc.Observations</textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-warning">Editar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal fade" id="delete-modal-@pc.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form asp-controller=computers asp-action="delete" asp-route-id="@pc.Id" class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Eliminar equipo</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="alert alert-danger">Esta accion es irreversible.</p>                               
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+         }
+    </div>   
+
+</div>
+
+<div class="modal fade" id="pc-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action=Create class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Datos de equipo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+           
+                <div class="form-group">
+                    <label asp-for=Serial class="form-label" ></label>
+                    <input asp-for=Serial type="text" class="form-control" data-val-required="Ingrese el codigo de equipo unico.">
+                    <span asp-validation-for=Serial class="text-danger" style="font-size:14px;"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=Owner class="form-label"></label>
+                    <input asp-for=Owner type="text" class="form-control" data-val-required="Ingrese el propietario del equipo.">
+                    <span asp-validation-for=Owner class="text-danger" style="font-size:14px;"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=DepartmentId class="form-label"></label>
+                    <select asp-for=DepartmentId asp-items=ViewBag.Departments type="text" class="form-control" data-val-required="Seleccione un departamento.">
+
+                    </select>
+                    <span asp-validation-for=DepartmentId class="text-danger" style="font-size:14px;"></span>
+                </div>        
+                <br />
+                <div class="form-group">
+                    <label asp-for=ResponsibleId class="form-label"></label>
+                    <select asp-for=ResponsibleId asp-items=ViewBag.Responsibles type="text" class="form-control" data-val-required="Seleccione el responsable de reparacion.">
+
+                    </select>
+                    <span asp-validation-for=ResponsibleId class="text-danger" style="font-size:14px;"></span>
+                </div>         
+                <br />
+                <div class="form-group">
+                    <label asp-for=Observations class="form-label"></label>
+                    <textarea asp-for=Observations class="form-control"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

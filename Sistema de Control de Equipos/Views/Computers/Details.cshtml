@@ -1,0 +1,288 @@
+﻿@{
+    ViewData["Title"] = "Equipos";
+    ViewData["Content-title"] = @ViewBag.Serial;
+}
+@model Sistema_de_Control_de_Equipos.Models.ViewModels.DetailsViewModel
+
+
+<div class="border bg-white">
+    <p class="p-3 bg-gray-light border-bottom text-bold">Informacion de registro</p>
+    <div class="p-3 d-flex justify-content-between w-75">
+        <div class="border-end flex-grow-1">
+            <p class="text-normal color-gray">Departamento</p>
+            <p class="text-normal color-dark">@ViewBag.Pc.Department.Name</p>
+        </div>
+
+        <div class="px-3 border-end flex-grow-1">
+            <p class="text-normal color-gray">Responsable</p>
+            <p class="text-normal color-dark">@ViewBag.Pc.Responsible.Name</p>
+        </div>
+        <div class="px-3 border-end flex-grow-1">
+            <p class="text-normal color-gray">Fecha de registro</p>
+            <p class="text-normal color-dark">@ViewBag.Pc.DateCreated</p>
+        </div>
+        <div class="px-3 border-end flex-grow-1">
+            <p class="text-normal color-gray">Fecha de actualizacion</p>
+            <p class="text-normal color-dark">@ViewBag.Pc.DateUpdated</p>
+        </div>
+        <div class="px-3 border-end flex-grow-1">
+            <p class="text-normal color-gray">Observacion general</p>
+            @if (@ViewBag.Pc.Observations == null)
+            {
+                <p class="text-normal color-dark">-----</p>
+            }
+            else
+            {
+                <p class="text-normal color-dark">@ViewBag.Pc.Observations</p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-3 border bg-white">
+    <div class="p-3 bg-gray-light border-bottom d-flex justify-content-between align-items-center">
+        <p class="m-0 text-bold">Componentes</p>
+        <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#component-modal">Agregar componente</button>
+    </div>
+    <div id="results" class="results-table">
+        <div class="results-header p-3 bg-gray-light border-bottom">
+            <div class="results-fields">
+                <p>Nombre</p>
+                <p>Serial</p>
+                <p>Marca</p>
+                <p>Modelo</p>
+                <p>Capacidad - Especificacion</p>
+            </div>
+            <div class="results-actions">
+                <p>Acciones</p>
+            </div>
+        </div>
+        @if (Model.Components.Count == 0)
+        {
+            <div class="text-center my-3">
+                <p class="color-gray text-bold">Sin implementaciones</p>
+                <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#component-modal">Agregar componente</button>
+            </div>
+
+        }
+        else{
+            @foreach (var component in Model.Components)
+            {
+                <div class="results-content m-3">
+                    <div class="results-data flex-grow-1 d-flex">
+                        <p>@component.Component.Name</p>
+                        <p>@component.Component.Serial</p>
+                        <p>@component.Brand.Name</p>
+                        <p>@component.Model.Name</p>                    
+                        @if (@component.Component.Specification != null)
+                        {
+                            <p>@component.Component.Specification</p>
+                        }
+                        else
+                        {
+                            <p>-----</p>
+                        }
+                    </div>
+                    <div class="results-actions d-flex align-items-center justify-content-evenly">                        
+                        <i role="button" class="fa-regular fa-trash-can"
+                           data-bs-toggle="modal"
+                           data-bs-target="#delete-modal-@component.Component.Id"></i>
+
+                        <i role="button" class="fa-regular  fa-pen-to-square" 
+                           data-bs-toggle="modal"
+                           data-bs-target="#edit-modal-@component.Component.Id"></i>
+                    </div>
+                </div>
+                <div class="modal fade" id="edit-modal-@component.Component.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <form asp-controller="components" asp-action="edit" class="modal-content" method="post">
+                            @*    <div asp-validation-summary="All"></div>*@
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Editar componente</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="modal-body">
+                                <input asp-for=Id type="hidden" value="@component.Component.Id" />
+
+                                <input asp-for=PcSerial type="hidden" value="@ViewBag.serial" />
+                                <input asp-for=PcId type="hidden" value="@ViewBag.Pc.Id" />
+
+
+                                <div class="form-group">
+                                    <label asp-for=Serial class="form-label">Nuevo numero de serie</label>
+                                    <input asp-for=Serial type="text" value=@component.Component.Serial data-val-required="Ingrese el nuevo numero de serie." class="form-control">
+                                    <span asp-validation-for=Serial style="font-size: 14px;" class="form-text text-danger"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=Name class="form-label">Nuevo nombre</label>
+                                    <input asp-for=Name type="text" value=@component.Component.Name data-val-required="Ingrese el nuevo nombre." class="form-control">
+                                    <span asp-validation-for=Name style="font-size: 14px;" class="form-text text-danger"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=BrandId class="form-label">Nueva marca</label>
+                                    <select asp-for=BrandId asp-items=ViewBag.Brands data-val-required="Seleccione una nueva marca." class="form-control"></select>
+                                    <span asp-validation-for=BrandId style="font-size: 14px;" class="form-text text-danger"></span>
+                                </div>
+                                <br />
+
+                                <div class="form-group">
+                                    <label asp-for=ModelId class="form-label">Nuevo modelo</label>
+                                    <select asp-for=ModelId asp-items=@ViewBag.Models data-val-required="Seleccione un nuevo modelo." class="form-control"></select>
+                                    <span asp-validation-for=ModelId style="font-size: 14px;" class="form-text text-danger"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for=Specification class="form-label">Nueva capacidad - Espeficicacion (Opcional)</label>
+                                    <textarea asp-for=Specification data-val-required="Ingrese la nueva especificacion o capacidad." class="form-control">
+                                                                            
+                                    </textarea>
+                                    <span asp-validation-for=Specification style="font-size: 14px;" class="form-text text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-warning">Editar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal fade" id="delete-modal-@component.Component.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form asp-controller=components asp-action="delete" asp-route-id="@component.Component.Id" class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Eliminar componente</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="alert alert-danger">Esta accion es irreversible.</p>
+                                <input asp-for=PcSerial type="hidden" value="@ViewBag.serial" />  
+                               
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="mt-3 border bg-white">
+    <div class="p-3 bg-gray-light border-bottom d-flex justify-content-between align-items-center">
+        <p class="m-0 text-bold">Problemas</p>
+        <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#problems-modal">Registrar problema</button>
+    </div>
+    @if (Model.Problems.Count == 0)
+    {
+        <div class="text-center my-3">
+            <p class="color-gray text-bold">Este equipo no se encuentra con problemas.</p>
+            <button class="btn create-btn" data-bs-toggle="modal" data-bs-target="#problems-modal">Registrar problema</button>
+        </div>
+    }
+    else
+    {
+        foreach (var problem in Model.Problems)
+        {
+            <div class="p-3 d-flex align-items-center justify-content-between">
+                <p class="m-0 text-normal color-dark">
+                       @problem.Description
+                </p>
+                <a asp-controller="problems" asp-action="delete" asp-route-id="@problem.Id" asp-route-pcSerial="@ViewBag.Serial">
+                    <i role="button" class="color-gray fa-solid fa-x fa-2xs"></i>
+                </a>
+
+            </div>
+
+            
+        }
+
+    }
+</div>
+
+
+
+<div class="modal fade" id="component-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-controller=components asp-action="create" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Datos del componente</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input asp-for=PcSerial type="hidden" value="@ViewBag.serial" />
+                <input asp-for=PcId type="hidden" value="@ViewBag.Pc.Id" />
+
+                <div class="form-group">
+                    <label asp-for=Serial class="form-label"></label>
+                    <input asp-for=Serial type="text" data-val-required="Ingrese el numero de serie." class="form-control">
+                    <span asp-validation-for=Serial style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=Name class="form-label"></label>
+                    <input asp-for=Name type="text" data-val-required="Ingrese el nombre." class="form-control">
+                    <span asp-validation-for=Name style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=BrandId class="form-label"></label>
+                    <select asp-for=BrandId asp-items=ViewBag.Brands data-val-required="Seleccione una marca." class="form-control"></select>
+                    <span asp-validation-for=BrandId style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=ModelId class="form-label"></label>
+                    <select asp-for=ModelId asp-items=@ViewBag.Models data-val-required="Seleccione un modelo." class="form-control"></select>
+                    <span asp-validation-for=ModelId style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for=Specification class="form-label"></label>
+                    <textarea asp-for=Specification data-val-required="Ingrese la especificacion o capacidad." class="form-control"></textarea>
+                    <span asp-validation-for=Specification style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="problems-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-controller=problems asp-action="create" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">¿Que problema tiene este equipo?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input asp-for=PcSerial type="hidden" value="@ViewBag.serial" />
+                <input asp-for=PcId type="hidden" value="@ViewBag.Pc.Id" />
+
+                <div class="form-group">
+                    <label asp-for=Description class="form-label"></label>
+                    <input asp-for=Description type="text" data-val-required="Ingrese la descripcion del problema." class="form-control">
+                    <span asp-validation-for=Description style="font-size: 14px;" class="form-text text-danger"></span>
+                </div>               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        Html.RenderPartial("_ValidationScriptsPartial");
+    }
+}

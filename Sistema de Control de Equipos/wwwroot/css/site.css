@@ -1,0 +1,141 @@
+:root {
+    --gray-text: #545b64;
+    --weight-text: 600;
+    --option-color-activated: #0073bb;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+}
+
+body {
+    background: #F5F5F5; 
+    font-size: 1.4rem;
+}
+html {
+    box-sizing: border-box;
+    position: relative;
+    min-height: 100%;
+}
+/*Layout*/
+.container-menu{
+    padding-right: 50px;
+}
+.menu {
+    border-radius: 5px;
+    font-size: 1rem;
+}
+    .menu * {
+        color: var(--gray-text);
+        margin-top: 10px;
+    }
+        .menu a:hover {
+            color: var(--option-color-activated);
+        }
+
+.active-option {
+    color: var(--option-color-activated);
+    font-weight: var(--weight-text);
+}
+.content {
+    border-radius: 5px;
+}
+
+.title{
+    font-weight:400;
+    font-size: 30px;
+}
+
+
+.create-btn {
+    color: var(--gray-text);
+    border: 1px solid var(--gray-text);
+    font-weight: var(--weight-text);
+}
+
+/*Table*/
+
+
+.results-table {
+    color: var(--gray-text);
+    font-size: 1rem;
+}
+   .results-header {
+       display: flex;
+        font-weight: var(--weight-text);
+    }
+    .results-fields{
+        display: flex;
+        flex-grow: 1;
+    }
+
+        .results-fields > * {
+            border-right: 1px solid gray;
+            width: 25%;
+            margin: 0;
+        }
+            .results-data > .hover-link:hover {
+                text-decoration: underline !important;
+            }
+            .results-fields p:not(:first-child) {
+                text-align: center;
+             }
+                .results-actions {
+                    width: 100px;
+                    text-align: center;
+                }
+                    .results-actions > * {
+                        margin: 0;
+                    }
+
+
+.results-content {
+    display: flex;
+}
+    .results-data > *{
+        width: 25%; 
+    }
+    .results-data > *:not(:first-child) {
+        text-align: center;
+    }  
+
+/*Form*/
+.form-label {
+    font-size: 1rem;
+    color: var(--gray-text);
+
+}
+
+/*EQUIPOS*/
+
+
+.text-normal {
+    font-size: 1rem;
+    font-weight: 400;
+
+}
+ 
+
+.text-bold {
+    font-size: 1rem;
+    font-weight: var(--weight-text);
+}
+
+.color-gray {
+    color: var(--gray-text);
+}
+
+.color-blue {
+    color: var(--option-color-activated);
+}
+
+.color-dark {
+    color: #16191f;
+}
+
+.bg-gray-light {
+    background: #FAFAFA;
+}
